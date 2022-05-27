@@ -26,7 +26,7 @@ class MainLocalStore extends _$MainLocalStore {
 
   Future<List<Project>> getAllProjects() => select(projects).get();
 
-  Future<List<Project>> getProjectById(int projectId) async {
+  Future<List<Project>> getProjectById(String projectId) async {
     return (select(projects)..where((p) => p.id.equals(projectId))).get();
   }
 
@@ -40,13 +40,13 @@ class MainLocalStore extends _$MainLocalStore {
 
   Future<List<Page>> getAllPages() => select(pages).get();
 
-  Future<List<Page>> getAllPagesOfProject(int projectId) async {
+  Future<List<Page>> getAllPagesOfProject(String projectId) async {
     return (select(pages)..where((p) => p.projectId.equals(projectId))).get();
   }
 
   Stream<List<Page>> watchAllPages() => select(pages).watch();
 
-  Future insertPages(Page page) => into(pages).insert(page);
+  Future insertPage(Page page) => into(pages).insert(page);
 
   Future updatePage(Page page) => update(pages).replace(page);
 
@@ -54,7 +54,7 @@ class MainLocalStore extends _$MainLocalStore {
 
   Future<List<Bubble>> getAllBubbles() => select(bubbles).get();
 
-  Future<List<Bubble>> getAllBubblesOfPage(int pageId) async {
+  Future<List<Bubble>> getAllBubblesOfPage(String pageId) async {
     return (select(bubbles)..where((b) => b.pageId.equals(pageId))).get();
   }
 
@@ -68,7 +68,7 @@ class MainLocalStore extends _$MainLocalStore {
 
   Future<List<Translation>> getAllTranslations() => select(translations).get();
 
-  Future<List<Translation>> getTranslationsOfBubble(int bubbleId) async {
+  Future<List<Translation>> getTranslationsOfBubble(String bubbleId) async {
     return (select(translations)..where((t) => t.bubbleId.equals(bubbleId))).get();
   }
 

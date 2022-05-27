@@ -22,14 +22,14 @@ class BaseUserApiRequest implements ApiRequest {
     Map<String, String>? queryParameters,
     Map<String, String>? extraHeaders,
     int timeout = 15,
-    bool userAuth = false,
+    bool userAuth = true,
   }) async {
     Map<String, String> headers = extraHeaders ?? {};
     if (userAuth) {
       headers['Authorization'] = 'Bearer ${userData.accessToken}';
     }
 
-    Uri uri = Uri.https('', path, queryParameters);
+    Uri uri = Uri.https('5a4b-85-159-27-200.eu.ngrok.io', path, queryParameters);
     Response? response;
 
     try {

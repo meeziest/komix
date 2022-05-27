@@ -1,12 +1,15 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:desktop_window/desktop_window.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:simple_manga_translation/domain/objects/user_data.dart';
 import 'package:simple_manga_translation/presentation/base_components/base_mvp/base_view.dart';
 import 'package:simple_manga_translation/presentation/di_scope/data_scope.dart';
 import 'package:simple_manga_translation/presentation/screens/auth_screen/authentication_screen.dart';
 import 'package:simple_manga_translation/presentation/screens/main_screen/main_screen_view.dart';
 import 'package:simple_manga_translation/presentation/utils/custom_colors.dart';
+
+import 'presentation/utils/utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +18,8 @@ void main() async {
     await DesktopWindow.setMinWindowSize(const Size(940, 670));
     appWindow.show();
   });
+
+  await Hive.initFlutter([await Utils.getDbPath(), r'\boxes\'].join());
 
   runApp(const MyApp());
 }

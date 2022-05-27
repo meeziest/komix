@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:simple_manga_translation/presentation/utils/custom_colors.dart';
+import 'package:simple_manga_translation/presentation/widgets/multiplier.dart';
 
 class CustomCard extends StatelessWidget {
   final String imagePath;
@@ -8,12 +10,16 @@ class CustomCard extends StatelessWidget {
   final double progress;
   final double width;
   final double height;
+  final String extraIconAsset;
+  final Function iconOnClick;
 
   const CustomCard(
       {Key? key,
       this.imagePath = '',
       required this.projectName,
       required this.creationDate,
+      required this.extraIconAsset,
+      required this.iconOnClick,
       this.width = double.infinity,
       this.height = double.infinity,
       required this.progress})
@@ -38,6 +44,21 @@ class CustomCard extends StatelessWidget {
           child: Stack(
             alignment: Alignment.bottomLeft,
             children: [
+              Positioned(
+                right: 20,
+                top: 20,
+                child: GestureDetector(
+                  onTap: () {
+                    iconOnClick();
+                  },
+                  child: MultiplierOnHover(
+                    child: SvgPicture.asset(
+                      extraIconAsset,
+                      color: AppColors.ADDONS_AGTUNG,
+                    ),
+                  ),
+                ),
+              ),
               const Positioned(
                   left: 20,
                   top: 20,
@@ -68,6 +89,7 @@ class CustomCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         creationDate,
+                        maxLines: 1,
                         style: const TextStyle(
                             fontSize: 13.0, fontWeight: FontWeight.w500, color: Color(0xBFffffff)),
                       ),

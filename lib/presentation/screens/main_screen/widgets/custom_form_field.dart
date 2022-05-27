@@ -5,18 +5,28 @@ import 'package:simple_manga_translation/presentation/utils/custom_colors.dart';
 class CustomFormField extends StatefulWidget {
   final double widthMagnifier;
   final double maxHeight;
-  final String text;
+  final TextEditingController textController;
   final bool isWithButton;
   final bool isEditable;
   final String labelText;
+  final String text;
   final String hintText;
+  final String? svgIconAsset;
+  final bool disableAutoFocus;
   final Function? customFunction;
+  final String? buttonSvgAsset;
+  final bool obscureText;
 
   const CustomFormField(
       {Key? key,
       this.widthMagnifier = 250,
       this.maxHeight = 100,
-      required this.text,
+      this.disableAutoFocus = false,
+      required this.textController,
+      this.obscureText = false,
+      this.buttonSvgAsset,
+      this.svgIconAsset,
+      this.text = '',
       this.labelText = '',
       this.hintText = '',
       this.isEditable = false,
@@ -30,15 +40,16 @@ class CustomFormField extends StatefulWidget {
 
 class _CustomFormFieldState extends State<CustomFormField> {
   final FocusNode _focusNode = FocusNode();
-  final TextEditingController textController = TextEditingController();
   late bool _edit;
 
   @override
   void didChangeDependencies() {
     _edit = widget.isEditable;
-    if (_edit) {
+    if (_edit || widget.disableAutoFocus == true) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _focusNode.requestFocus();
+        if (!widget.disableAutoFocus) {
+          _focusNode.requestFocus();
+        }
       });
     }
     super.didChangeDependencies();
@@ -47,53 +58,68 @@ class _CustomFormFieldState extends State<CustomFormField> {
   @override
   Widget build(BuildContext context) {
     double maxWidth = MediaQuery.of(context).size.width * 1 / 5;
-    return GestureDetector(
-      onTap: () {
-        if (widget.customFunction != null) {
-          widget.customFunction!();
-        }
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.text,
-            style: const TextStyle(color: AppColors.textActiveColor),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Container(
-                constraints: BoxConstraints(
-                  maxHeight: widget.maxHeight,
-                  maxWidth: maxWidth + widget.widthMagnifier,
-                ),
-                child: TextFormField(
-                  focusNode: _focusNode,
-                  controller: textController,
-                  readOnly: !_edit,
-                  enabled: _edit,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    labelStyle: const TextStyle(color: AppColors.textColor),
-                    hintStyle: const TextStyle(color: AppColors.textColor),
-                    border: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                    focusedBorder: const OutlineInputBorder(
-                        borderSide: BorderSide(color: AppColors.projectIconColor)),
-                    labelText: widget.labelText,
-                    hintText: widget.hintText,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.text,
+          style: const TextStyle(color: AppColors.textActiveColor),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Container(
+              constraints: BoxConstraints(
+                maxHeight: widget.maxHeight,
+                maxWidth: maxWidth + widget.widthMagnifier,
+              ),
+              child: TextFormField(
+                focusNode: _focusNode,
+                obscureText: widget.obscureText,
+                controller: widget.textController,
+                readOnly: !_edit,
+                enabled: _edit || widget.customFunction != null,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  alignLabelWithHint: true,
+                  prefixIcon: widget.svgIconAsset != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SvgPicture.asset(
+                            widget.svgIconAsset!,
+                            color: AppColors.iconColor,
+                            width: 20,
+                          ),
+                        )
+                      : null,
+                  prefixIconColor: AppColors.iconColor,
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  labelStyle: const TextStyle(color: AppColors.textColor),
+                  hintStyle: const TextStyle(color: AppColors.textColor),
+                  border: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+                  focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.projectIconColor)),
+                  labelText: widget.labelText,
+                  hintText: widget.hintText,
                 ),
               ),
-              if (widget.isWithButton)
-                SizedBox(
-                  width: 55,
-                  height: 55,
-                  child: buildButton(
-                      active: _edit,
-                      assetSvgPath: 'assets/icons/pencil.svg',
-                      onPressed: () {
+            ),
+            if (widget.isWithButton)
+              SizedBox(
+                width: 55,
+                height: 55,
+                child: buildButton(
+                    active: _edit,
+                    assetSvgPath: widget.buttonSvgAsset ?? 'assets/icons/pencil.svg',
+                    onPressed: () async {
+                      if (widget.customFunction != null) {
+                        String? newPath = await widget.customFunction!();
+                        if (newPath != null) {
+                          setState(() {
+                            widget.textController.text = newPath;
+                          });
+                        }
+                      } else {
                         setState(() {
                           _edit = !_edit;
                         });
@@ -101,16 +127,16 @@ class _CustomFormFieldState extends State<CustomFormField> {
                           if (_edit) {
                             _focusNode.requestFocus();
                           } else {
-                            textController.clear();
+                            widget.textController.clear();
                           }
                         });
-                      },
-                      center: true),
-                )
-            ],
-          ),
-        ],
-      ),
+                      }
+                    },
+                    center: true),
+              )
+          ],
+        ),
+      ],
     );
   }
 

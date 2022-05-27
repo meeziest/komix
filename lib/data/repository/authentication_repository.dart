@@ -23,16 +23,17 @@ class AuthenticationRepository extends BaseApiRequest {
   }
 
   Future<dynamic> logIn(String email, String password) async {
-    final response =
-        await makeRequest(path: 'auth/login/', requestType: RequestType.post, extraHeaders: {
-      'accept': 'application/json',
-      'Content-Type': 'application/json',
-    }, data: {
-      'email': email,
-      'password': password
-    });
-    var userData = UserData.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
-    userData.userId = email;
+    // final response =
+    //     await makeRequest(path: 'auth/login/', requestType: RequestType.post, extraHeaders: {
+    //   'accept': 'application/json',
+    //   'Content-Type': 'application/json',
+    // }, data: {
+    //   'email': email,
+    //   'password': password
+    // });
+    // var userData = UserData.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
+    // userData.userId = email;
+    final userData = UserData(userId: 'dimash@mail.ru', accessToken: '2281', baseUrl: '');
     await SharedPreferencesRepository().addUserData(userData);
     return userData;
   }

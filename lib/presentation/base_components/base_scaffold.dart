@@ -31,46 +31,50 @@ class BaseScaffold extends StatelessWidget {
       color: topBarColor,
       child: Column(
         children: [
-          Material(
-            color: AppColors.topBarBackgroundColor,
-            child: WindowBorder(
-              color: AppColors.topBarBorderColor,
-              child: WindowTitleBarBox(
-                child: MoveWindow(
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(left: 20),
-                            child: Text(
-                              AppDictionary.appTitle,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.topBarTextColor,
+          Expanded(
+            flex: 1,
+            child: Material(
+              color: AppColors.topBarBackgroundColor,
+              child: WindowBorder(
+                color: AppColors.topBarBorderColor,
+                child: WindowTitleBarBox(
+                  child: MoveWindow(
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Text(
+                                AppDictionary.appTitle,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.topBarTextColor,
+                                ),
                               ),
                             ),
-                          ),
-                          if (desktopTitleBarWidget != null)
-                            Expanded(
-                              child: Row(
-                                children: desktopTitleBarWidget!,
-                              ),
-                            )
-                          else
-                            const Spacer(),
-                          WindowsButtons(isMaximized: appWindow.isMaximized),
-                        ],
-                      ),
-                    ],
+                            if (desktopTitleBarWidget != null)
+                              Expanded(
+                                child: Row(
+                                  children: desktopTitleBarWidget!,
+                                ),
+                              )
+                            else
+                              const Spacer(),
+                            WindowsButtons(isMaximized: appWindow.isMaximized),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
           Expanded(
+            flex: 26,
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               child: Scaffold(

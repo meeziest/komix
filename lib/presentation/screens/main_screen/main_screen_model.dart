@@ -1,3 +1,4 @@
+import 'package:simple_manga_translation/models/hive_models/project_model.dart';
 import 'package:simple_manga_translation/presentation/base_components/base_mvp/base_view.dart';
 import 'package:simple_manga_translation/presentation/base_components/base_mvp/base_view_model.dart';
 
@@ -7,4 +8,6 @@ class MainScreenModel extends BaseViewModel {
   MainScreenModel({ScreenState state = ScreenState.none}) : super(state);
 
   Sections currentSection = Sections.projects;
+  String defaultProjectDirectory = '';
+  Map<String, ProjectModel> projectModels = {};
 }

@@ -3,12 +3,11 @@
 import 'dart:convert';
 
 import 'package:rx_shared_preferences/rx_shared_preferences.dart';
-import 'package:simple_manga_translation/domain/objects/profile_data.dart';
 import 'package:simple_manga_translation/domain/objects/user_data.dart';
 
-const String _PUSH_TOKEN = 'push_token';
 const String _USER_DATA = 'user_data';
 const String _PROFILE_DATA = 'profile_data';
+const String _PROJECT_SAVE_PATH = 'project_save_path';
 
 class SharedPreferencesRepository {
   late SharedPreferences _prefs;
@@ -27,13 +26,16 @@ class SharedPreferencesRepository {
     return getUserData();
   }
 
-  String? getPushToken(String user) {
-    try {
-      String? token = _prefs.getString('$_PUSH_TOKEN-$user');
-      return token;
-    } catch (e) {
-      return null;
-    }
+  Future setProjectSavePath(String savePath, UserData userData) async {
+    return _prefs.setString('$_PROJECT_SAVE_PATH-${userData.userId}', savePath);
+  }
+
+  void cleanProjectSavePath(UserData userData) {
+    _prefs.remove('$_PROJECT_SAVE_PATH-${userData.userId}');
+  }
+
+  String? getProjectSavePath(UserData userData) {
+    return _prefs.getString('$_PROJECT_SAVE_PATH-${userData.userId}');
   }
 
   Future addUserData(UserData userData) async {
@@ -41,36 +43,6 @@ class SharedPreferencesRepository {
     users.add(userData);
     return _prefs.setStringList(_USER_DATA,
         List<String>.generate(users.length, (index) => jsonEncode(users[index].toJson())));
-  }
-
-  Future addProfileData(ProfileData profileData) async {
-    List<ProfileData> profiles = getProfileData();
-    profiles.add(profileData);
-    return _prefs.setStringList(_PROFILE_DATA,
-        List<String>.generate(profiles.length, (index) => jsonEncode(profiles[index].toJson())));
-  }
-
-  List<ProfileData> getProfileData() {
-    List<String> listJson = _prefs.getStringList(_PROFILE_DATA) ?? [];
-    if (listJson.isEmpty) {
-      return [];
-    } else {
-      bool needRewrite = false;
-      List<ProfileData> result = [];
-      for (var element in listJson) {
-        try {
-          final profileData = ProfileData.fromJson(jsonDecode(element));
-          result.add(profileData);
-        } catch (e) {
-          needRewrite = true;
-        }
-      }
-      if (needRewrite) {
-        _prefs.setStringList(_PROFILE_DATA,
-            List<String>.generate(result.length, (index) => jsonEncode(result[index].toJson())));
-      }
-      return result;
-    }
   }
 
   List<UserData> getUserData() {

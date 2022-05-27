@@ -69,6 +69,7 @@ class AppColors {
   static const Color projectCardBackgroundColor = Color(0xff424242);
   static const Color projectIconColor = Color(0xfff1b404);
   static const Color iconActiveColor = Color(0xff099c3e);
+  static const Color iconActiveColor2 = Colors.red;
   static const Color justWhite = Colors.white;
 }
 

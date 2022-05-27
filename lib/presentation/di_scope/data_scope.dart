@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:simple_manga_translation/data/repository/shared_preferences_repository.dart';
-import 'package:simple_manga_translation/domain/interactors/data_core.dart';
+import 'package:simple_manga_translation/domain/interactors/core/data_core.dart';
 import 'package:simple_manga_translation/domain/objects/user_data.dart';
 
 class DataScope {

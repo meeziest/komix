@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
 class Projects extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  TextColumn get id => text().withLength(min: 1, max: 150)();
   TextColumn get title => text().withLength(min: 6, max: 32)();
   DateTimeColumn get creationTime => dateTime()
       .check(creationTime.isBiggerThan(Constant(DateTime(1970))))
@@ -10,27 +10,39 @@ class Projects extends Table {
       .check(creationTime.isBiggerThan(Constant(DateTime(1970))))
       .withDefault(currentDateAndTime)();
   TextColumn get description => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
 }
 
 class Pages extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  TextColumn get id => text().withLength(min: 1, max: 150)();
   TextColumn get path => text()();
   BoolColumn get isTranslated => boolean().withDefault(const Constant(false))();
-  IntColumn get projectId => integer().customConstraint('REFERENCES projects(id) NOT NULL')();
+  TextColumn get projectId => text().customConstraint('REFERENCES projects(id) NOT NULL')();
+
+  @override
+  Set<Column> get primaryKey => {id};
 }
 
 class Bubbles extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  TextColumn get id => text().withLength(min: 1, max: 150)();
   TextColumn get originalText => text()();
   IntColumn get dx => integer()();
   IntColumn get dy => integer()();
   BoolColumn get isTranslated => boolean().withDefault(const Constant(false))();
-  IntColumn get pageId => integer().customConstraint('REFERENCES pages(id) NOT NULL')();
+  TextColumn get pageId => text().customConstraint('REFERENCES pages(id) NOT NULL')();
+
+  @override
+  Set<Column> get primaryKey => {id};
 }
 
 class Translations extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  TextColumn get id => text().withLength(min: 1, max: 150)();
   TextColumn get translationText => text()();
-  IntColumn get bubbleId =>
-      integer().nullable().customConstraint('REFERENCES bubbles(id) NOT NULL')();
+  TextColumn get bubbleId =>
+      text().nullable().customConstraint('REFERENCES bubbles(id) NOT NULL')();
+
+  @override
+  Set<Column> get primaryKey => {id};
 }

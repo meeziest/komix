@@ -10,18 +10,18 @@ class BaseScaffold extends StatelessWidget {
   final Color topBarColor;
   final AppBar? appBar;
   final List<Widget>? desktopTitleBarWidget;
-  final Widget? drawer;
   final GlobalKey? scaffoldKey;
+  final Positioned? positionedWidget;
 
   const BaseScaffold({
     Key? key,
     required this.child,
+    this.positionedWidget,
     this.showBackgroundImage = false,
     this.backgroundColor = Colors.white,
     this.topBarColor = Colors.white,
     this.appBar,
     this.desktopTitleBarWidget,
-    this.drawer,
     this.scaffoldKey,
   }) : super(key: key);
 
@@ -32,7 +32,7 @@ class BaseScaffold extends StatelessWidget {
       child: Column(
         children: [
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Material(
               color: AppColors.topBarBackgroundColor,
               child: WindowBorder(
@@ -74,13 +74,12 @@ class BaseScaffold extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 26,
+            flex: 50,
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               child: Scaffold(
                 key: scaffoldKey,
                 appBar: appBar,
-                endDrawer: drawer,
                 backgroundColor: backgroundColor,
                 body: Stack(
                   children: [
@@ -90,12 +89,21 @@ class BaseScaffold extends StatelessWidget {
                         height: MediaQuery.of(context).size.height,
                         child: Container(),
                       ),
-                    child
+                    child,
+                    if (positionedWidget != null) positionedWidget!,
                   ],
                 ),
               ),
             ),
           ),
+          Expanded(
+              flex: 1,
+              child: WindowBorder(
+                color: AppColors.topBarBorderColor,
+                child: Container(
+                  color: AppColors.topBarBackgroundColor,
+                ),
+              ))
         ],
       ),
     );

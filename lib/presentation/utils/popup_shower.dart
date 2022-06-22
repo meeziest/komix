@@ -18,13 +18,17 @@ class Popups {
     String? buttonText,
     String? cancelButtonText,
     Color? buttonColor,
-    bool canPopWithProjectData = false,
+    bool createProjectPopup = false,
+    bool serverPopup = false,
+    String serverUrlText = '',
     Color? textColor,
     String? secondButtonText,
     bool isLoading = false,
   }) async {
     TextEditingController projectTitle = TextEditingController();
     TextEditingController projectDescription = TextEditingController();
+    TextEditingController serverUrl = TextEditingController();
+    serverUrl.text = serverUrlText;
     List<File> imageFiles = [];
 
     return await showDialog(
@@ -65,7 +69,19 @@ class Popups {
                         ),
                       ),
                     ),
-                  if (canPopWithProjectData)
+                  if (serverPopup)
+                    Column(
+                      children: [
+                        CustomFormField(
+                            widthMagnifier: 35,
+                            text: 'Server',
+                            textController: serverUrl,
+                            isWithButton: false,
+                            disableAutoFocus: true,
+                            isEditable: true),
+                      ],
+                    ),
+                  if (createProjectPopup)
                     Column(
                       children: [
                         CustomFormField(
@@ -119,10 +135,14 @@ class Popups {
                                 textForButton: buttonText,
                                 context: context,
                                 textColor: buttonColor ?? AppColors.ACCENT_BLUKA,
-                                buttonColor: buttonColor ?? AppColors.ACCENT_BLUKA,
+                                buttonColor: buttonColor ?? AppColors.topBarBackgroundColor,
                                 isColorFilled: true,
                                 onPressed: () {
-                                  pop(context, PopupsResult.ok);
+                                  if (serverPopup) {
+                                    pop(context, serverUrl.text);
+                                  } else {
+                                    pop(context, PopupsResult.ok);
+                                  }
                                 },
                               )
                             : const SizedBox(),
@@ -134,11 +154,11 @@ class Popups {
                         textForButton: secondButtonText,
                         context: context,
                         textColor: buttonColor ?? AppColors.ACCENT_BLUKA,
-                        buttonColor: buttonColor ?? AppColors.ACCENT_BLUKA,
+                        buttonColor: buttonColor ?? AppColors.topBarBackgroundColor,
                         isColorFilled: true,
                         onPressed: () {
-                          if (canPopWithProjectData && imageFiles.isNotEmpty) {
-                            popWithFile(
+                          if (createProjectPopup && imageFiles.isNotEmpty) {
+                            pop(
                                 context,
                                 ProjectModel(
                                   code: [
@@ -173,10 +193,39 @@ class Popups {
     );
   }
 
-  static void pop(BuildContext context, PopupsResult result) => Navigator.of(context).pop(result);
+  static Future<dynamic> showFileOrdering({
+    required BuildContext context,
+  }) async {
+    return await showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            backgroundColor: AppColors.backgroundColor,
+            contentPadding: EdgeInsets.zero,
+            shape:
+                const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+            content: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  width: 500,
+                  child: Column(
+                    children: [],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
+  }
 
-  static void popWithFile(BuildContext context, ProjectModel result) =>
-      Navigator.of(context).pop(result);
+  static void pop(BuildContext context, dynamic result) => Navigator.of(context).pop(result);
+
+  // static void popWithFiles(BuildContext context, ProjectModel result) =>
+  //     Navigator.of(context).pop(result);
+  //
+  // static void popWithString(BuildContext context, String result) =>
+  //     Navigator.of(context).pop(result);
 
   static Widget _buildButtonForPopups({
     required VoidCallback onPressed,

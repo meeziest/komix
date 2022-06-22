@@ -6,6 +6,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart' as path_lib;
 import 'package:simple_manga_translation/data/repository/shared_preferences_repository.dart';
 import 'package:simple_manga_translation/domain/objects/user_data.dart';
+import 'package:simple_manga_translation/models/hive_models/page_type.dart';
 
 class Utils {
   static void clearRouteStack(BuildContext context) {
@@ -32,6 +33,26 @@ class Utils {
 
   static Future<String?> getSaveDirectory(UserData userData) async {
     String? saveDirectory = SharedPreferencesRepository().getProjectSavePath(userData);
+    return saveDirectory;
+  }
+
+  static Future<String> getPagesSaveDirectory(UserData userData, String name, PageType type) async {
+    String? saveDirectory = await getSaveDirectory(userData);
+    if (saveDirectory == null) {
+      saveDirectory = await createFolderInAppDocDir('$name/' + type.string);
+    } else {
+      saveDirectory = await createFolderInAppDocDir('$name/' + type.string, path: saveDirectory);
+    }
+    return saveDirectory;
+  }
+
+  static Future<String> getDeleteDirectory(String name, UserData userData) async {
+    String? saveDirectory = await getSaveDirectory(userData);
+    if (saveDirectory == null) {
+      saveDirectory = await createFolderInAppDocDir(name);
+    } else {
+      saveDirectory = await createFolderInAppDocDir(name, path: saveDirectory);
+    }
     return saveDirectory;
   }
 

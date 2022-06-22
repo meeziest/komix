@@ -18,5 +18,9 @@ abstract class ApiRequest {
     throw RequestException(code: RequestExceptionCode.timeOut);
   }
 
+  String? responseMessageProcessing(Response response) {
+    throw UnimplementedError();
+  }
+
   void generalResponseProcessing(Map<String, dynamic> body) async {}
 }

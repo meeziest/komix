@@ -4,6 +4,7 @@ import 'package:simple_manga_translation/presentation/base_components/base_scaff
 import 'package:simple_manga_translation/presentation/screens/auth_screen/authentication_screen_model.dart';
 import 'package:simple_manga_translation/presentation/screens/auth_screen/authentication_screen_presenter.dart';
 import 'package:simple_manga_translation/presentation/utils/custom_colors.dart';
+import 'package:simple_manga_translation/presentation/widgets/custom_progress_indicator.dart';
 import 'package:simple_manga_translation/presentation/widgets/multiplier.dart';
 
 class AuthenticationScreen extends StatefulWidget {
@@ -37,119 +38,132 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           return BaseScaffold(
             backgroundColor: AppColors.backgroundColor,
             topBarColor: AppColors.topBarBackgroundColor,
-            child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Center(
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width / 2,
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: <Widget>[
-                        Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(10),
-                            child: const Text(
-                              'Komix',
-                              style: TextStyle(
-                                  color: AppColors.justWhite,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 30),
-                            )),
-                        Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              _presenter.model.authSection == AuthSection.register
-                                  ? 'Login'
-                                  : 'Register',
-                              style: const TextStyle(color: AppColors.textColor, fontSize: 20),
-                            )),
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          child: TextField(
-                            focusNode: _presenter.usernameFocusNode,
-                            cursorColor: Colors.deepOrange,
-                            controller: _presenter.emailController,
-                            style: const TextStyle(color: AppColors.justWhite),
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.deepOrange),
-                                ),
-                                labelText: 'Email',
-                                labelStyle: TextStyle(color: AppColors.textColor),
-                                floatingLabelStyle: TextStyle(color: Colors.deepOrange)),
-                          ),
-                        ),
-                        if (_presenter.model.authSection == AuthSection.login)
-                          Container(
-                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                            child: TextField(
-                              focusNode: _presenter.passwordFocusNode,
-                              obscureText: true,
-                              cursorColor: Colors.deepOrange,
-                              style: const TextStyle(color: AppColors.justWhite),
-                              controller: _presenter.passwordController,
-                              decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelStyle: TextStyle(color: AppColors.textColor),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.deepOrange),
+            child: Stack(
+              children: [
+                Positioned(
+                    right: 10,
+                    bottom: 10,
+                    child: GestureDetector(
+                        onLongPress: () => _presenter.onVersionMultipleClick(),
+                        child:
+                            const Text('v.0.0.1', style: TextStyle(color: AppColors.textColor)))),
+                Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _presenter.model.isLoading
+                              ? const CustomProgressIndicator(
+                                  color: AppColors.iconColor, height: 100, width: 100)
+                              : SizedBox(
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                    children: <Widget>[
+                                      Container(
+                                          alignment: Alignment.center,
+                                          padding: const EdgeInsets.all(10),
+                                          child: Text(
+                                            _presenter.model.authSection == AuthSection.register
+                                                ? 'Register'
+                                                : 'Login',
+                                            style: const TextStyle(
+                                                color: AppColors.textColor, fontSize: 20),
+                                          )),
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        child: TextField(
+                                          focusNode: _presenter.usernameFocusNode,
+                                          cursorColor: Colors.deepOrange,
+                                          controller: _presenter.emailController,
+                                          style: const TextStyle(color: AppColors.justWhite),
+                                          decoration: const InputDecoration(
+                                              border: OutlineInputBorder(),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.deepOrange),
+                                              ),
+                                              labelText: 'Email',
+                                              labelStyle: TextStyle(color: AppColors.textColor),
+                                              floatingLabelStyle:
+                                                  TextStyle(color: Colors.deepOrange)),
+                                        ),
+                                      ),
+                                      if (_presenter.model.authSection == AuthSection.login)
+                                        Container(
+                                          padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                                          child: TextField(
+                                            focusNode: _presenter.passwordFocusNode,
+                                            obscureText: true,
+                                            cursorColor: Colors.deepOrange,
+                                            style: const TextStyle(color: AppColors.justWhite),
+                                            controller: _presenter.passwordController,
+                                            decoration: const InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                labelStyle: TextStyle(color: AppColors.textColor),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(color: Colors.deepOrange),
+                                                ),
+                                                labelText: 'Password',
+                                                floatingLabelStyle:
+                                                    TextStyle(color: Colors.deepOrange)),
+                                          ),
+                                        ),
+                                      if (_presenter.model.authSection == AuthSection.login)
+                                        TextButton(
+                                          onPressed: () {
+                                            //forgot password screen
+                                          },
+                                          child: const Text(
+                                            'Forgot a password',
+                                            style: TextStyle(color: Colors.white60),
+                                          ),
+                                        ),
+                                      Container(
+                                        height: 50,
+                                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                        child: MultiplierOnHover(
+                                          multiplier: 1.01,
+                                          child: buildButton(
+                                            onPressed: _presenter.auth,
+                                            text: _presenter.model.authSection == AuthSection.login
+                                                ? 'Login'
+                                                : 'Register',
+                                            center: true,
+                                            active: true,
+                                          ),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          if (_presenter.model.authSection == AuthSection.login)
+                                            const Text(
+                                              'Does not have account yet?',
+                                              style: TextStyle(color: Colors.white60),
+                                            ),
+                                          TextButton(
+                                            child: Text(
+                                              _presenter.model.authSection == AuthSection.register
+                                                  ? 'login'
+                                                  : 'register',
+                                              style: const TextStyle(
+                                                  color: AppColors.iconActiveColor, fontSize: 20),
+                                            ),
+                                            onPressed: () {
+                                              _presenter.toggleAuthSection();
+                                            },
+                                          )
+                                        ],
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                      ),
+                                    ],
                                   ),
-                                  labelText: 'Password',
-                                  floatingLabelStyle: TextStyle(color: Colors.deepOrange)),
-                            ),
-                          ),
-                        if (_presenter.model.authSection == AuthSection.login)
-                          TextButton(
-                            onPressed: () {
-                              //forgot password screen
-                            },
-                            child: const Text(
-                              'Forgot a password',
-                              style: TextStyle(color: Colors.white60),
-                            ),
-                          ),
-                        Container(
-                          height: 50,
-                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                          child: MultiplierOnHover(
-                            multiplier: 1.01,
-                            child: buildButton(
-                              onPressed: _presenter.auth,
-                              text: _presenter.model.authSection == AuthSection.login
-                                  ? 'Login'
-                                  : 'Register',
-                              center: true,
-                              active: true,
-                            ),
-                          ),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            if (_presenter.model.authSection == AuthSection.login)
-                              const Text(
-                                'Does not have account?',
-                                style: TextStyle(color: Colors.white60),
-                              ),
-                            TextButton(
-                              child: Text(
-                                _presenter.model.authSection == AuthSection.register
-                                    ? 'login'
-                                    : 'register',
-                                style: const TextStyle(color: Colors.orange, fontSize: 20),
-                              ),
-                              onPressed: () {
-                                _presenter.toggleAuthSection();
-                              },
-                            )
-                          ],
-                          mainAxisAlignment: MainAxisAlignment.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                )),
+                                ),
+                        ],
+                      ),
+                    )),
+              ],
+            ),
           );
         });
   }

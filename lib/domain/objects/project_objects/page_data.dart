@@ -1,27 +1,38 @@
-class PageData {
-  PageData({
-    required this.imagePath,
-    this.isTranslated = false,
-  });
+import 'package:simple_manga_translation/domain/objects/project_objects/bubble_data.dart';
 
-  String imagePath;
-  bool isTranslated;
+class PageData {
+  PageData({required this.code, required this.url, required this.order, this.bubbles = const []});
+
+  String code;
+  String url;
+  int order;
+  List<BubbleData> bubbles;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PageData && runtimeType == other.runtimeType && imagePath == other.imagePath;
+      other is PageData &&
+          runtimeType == other.runtimeType &&
+          code == other.code &&
+          url == other.url &&
+          order == other.order;
 
   @override
-  int get hashCode => Object.hash(runtimeType, imagePath);
+  int get hashCode => Object.hash(runtimeType, url, order, code);
 
   factory PageData.fromJson(Map<String, dynamic> json) => PageData(
-        imagePath: json['page_image_path'],
-        isTranslated: json['is_translated'] ?? false,
+        url: json['url'] ?? '',
+        order: json['order'] ?? 0,
+        code: json['code'] ?? '',
+        bubbles: json['bubbles'] != null
+            ? ((json['bubbles'] as List).map((e) => BubbleData.fromJson(e)).toList())
+            : [],
       );
 
   Map<String, dynamic> toJson() => {
-        'page_image_path': imagePath,
-        'is_translated': isTranslated,
+        'url': url,
+        'order': order,
+        'code': code,
+        'bubbles': List<dynamic>.from(bubbles.map((x) => x.toJson()))
       };
 }

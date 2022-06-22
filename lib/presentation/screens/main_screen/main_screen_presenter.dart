@@ -87,8 +87,7 @@ class MainScreenPresenter extends BasePresenter<MainScreenModel> {
         model.defaultProjectDirectory = await Utils.getDefaultProjectsFolder();
       }
       directoryTextController.text = model.defaultProjectDirectory;
-      model.projectModels = Map<String, ProjectModel>.from(
-          (await BoxLocalStore(dataScope.dataCore.userData).getAllProjects()));
+      model.projectModels = await BoxLocalStore(dataScope.dataCore.userData).getAllProjects();
       updateView();
     });
   }
@@ -154,12 +153,15 @@ class MainScreenPresenter extends BasePresenter<MainScreenModel> {
         title: 'Create project',
         secondButtonText: 'Create',
         context: context,
-        canPopWithProjectData: true);
+        createProjectPopup: true);
     if (result is ProjectModel) {
+      startLoading();
       try {
         await ProjectInteractor(dataScope).createProject(result);
+        endLoading();
       } on LocalException catch (e) {
         Popups.showPopup(context: context, title: e.message, buttonText: 'Ok');
+        endLoading();
       }
     }
     if (result is PopupsResult) {

@@ -6,8 +6,8 @@ import 'package:rx_shared_preferences/rx_shared_preferences.dart';
 import 'package:simple_manga_translation/domain/objects/user_data.dart';
 
 const String _USER_DATA = 'user_data';
-const String _PROFILE_DATA = 'profile_data';
 const String _PROJECT_SAVE_PATH = 'project_save_path';
+const String _SERVER_URL = 'server_url';
 
 class SharedPreferencesRepository {
   late SharedPreferences _prefs;
@@ -24,6 +24,14 @@ class SharedPreferencesRepository {
   Future<List<UserData>> init() async {
     _prefs = await SharedPreferences.getInstance();
     return getUserData();
+  }
+
+  String? getServerUrl() {
+    return _prefs.getString(_SERVER_URL);
+  }
+
+  Future setServerUrl(String serverUrl) async {
+    return _prefs.setString(_SERVER_URL, serverUrl);
   }
 
   Future setProjectSavePath(String savePath, UserData userData) async {

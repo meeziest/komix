@@ -3,6 +3,7 @@ import 'package:simple_manga_translation/data/repository/store/local_store/local
 import 'package:simple_manga_translation/domain/objects/user_data.dart';
 import 'package:simple_manga_translation/models/hive_models/bubble_model.dart';
 import 'package:simple_manga_translation/models/hive_models/page_model.dart';
+import 'package:simple_manga_translation/models/hive_models/page_type.dart';
 import 'package:simple_manga_translation/models/hive_models/project_model.dart';
 
 const String _keyProject = 'project_box_store';
@@ -26,9 +27,16 @@ class BoxLocalStore {
     return (await _openPageBox()).watch();
   }
 
-  Future<Map> getAllProjects() async {
+  Future<Map<String, ProjectModel>> getAllProjects() async {
     var box1 = await _openProjectBox();
-    return box1.toMap();
+    Map<String, ProjectModel> projectModels = Map<String, ProjectModel>.from(box1.toMap());
+    Map<String, ProjectModel> currentUserProjects = {};
+    for (var key in projectModels.keys) {
+      if (key == [userData.userId, projectModels[key]!.code].join('-')) {
+        currentUserProjects[key] = projectModels[key]!;
+      }
+    }
+    return currentUserProjects;
   }
 
   Future<void> addProject(ProjectModel projectModel) async {
@@ -59,7 +67,7 @@ class BoxLocalStore {
     return null;
   }
 
-  Future<List<PageModel>> getPagesByProjectCode(String code) async {
+  Future<List<PageModel>> getPages(String code) async {
     var box1 = await _openPageBox();
     List<PageModel> pageModels = [];
     box1.toMap().forEach((key, value) {
@@ -70,22 +78,27 @@ class BoxLocalStore {
     return pageModels;
   }
 
-  Future<void> addPageToBox(PageModel pageModel) async {
+  Future<void> putPage(PageModel pageModel) async {
     var box = await _openPageBox();
-    await box.put('${userData.userId}--${pageModel.code}', pageModel);
+    await box.put(
+        '${userData.userId}-${pageModel.ofProject.code}-${pageModel.pageType}-${pageModel.order}',
+        pageModel);
   }
 
-  Future<void> removePageFromBox(PageModel pageModel) async {
+  Future<void> removePages(String code) async {
     var box = await _openPageBox();
-    await box.delete('${userData.userId}-${pageModel.code}');
+    List<String> keys = [];
+    box.toMap().forEach((key, value) {
+      if (value.ofProject.code == code) {
+        keys.add(key);
+      }
+    });
+    await box.deleteAll(keys);
   }
 
-  Future<PageModel?> getPage(String code) async {
+  Future<PageModel?> getPage(String code, PageType type) async {
     var box = await _openPageBox();
-    if (box.containsKey('${userData.userId}-$code')) {
-      return await box.get('${userData.userId}-$code');
-    }
-    return null;
+    return await box.get('${userData.userId}-$code-$type');
   }
 
   Future<void> addBubbleToBox(BubbleModel bubbleModel) async {
@@ -115,6 +128,9 @@ class BoxLocalStore {
     }
     if (!Hive.isAdapterRegistered(BubbleModelAdapter().typeId)) {
       Hive.registerAdapter<BubbleModel>(BubbleModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(PageTypeAdapter().typeId)) {
+      Hive.registerAdapter<PageType>(PageTypeAdapter());
     }
   }
 

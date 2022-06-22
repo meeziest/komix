@@ -100,7 +100,6 @@ class _CodeVerificationScreenState extends State<CodeVerificationScreen> {
                                   color: AppColors.justWhite),
                               textAlign: TextAlign.center,
                               cursorColor: AppColors.projectIconColor,
-                              autofocus: true,
                               cursorHeight: 20,
                               controller: _presenter.codeController,
                               focusNode: _presenter.codeFocus,
@@ -116,7 +115,7 @@ class _CodeVerificationScreenState extends State<CodeVerificationScreen> {
                                     Radius.circular(10.0),
                                   ),
                                 ),
-                                hintText: 'code',
+                                // hintText: 'code',
                                 hintStyle: TextStyle(
                                     letterSpacing: 2,
                                     fontSize: 17,

@@ -1,17 +1,19 @@
-import 'page_data.dart';
+import 'dart:convert';
+
+import 'package:simple_manga_translation/domain/objects/project_objects/page_data.dart';
 
 class ProjectData {
   ProjectData({
     required this.title,
     this.description = '',
     this.code = '',
-    this.pages = const [],
+    this.pagesData = const [],
   });
 
   String title;
   String description;
   String code;
-  List<PageData> pages;
+  List<PageData> pagesData;
 
   @override
   bool operator ==(Object other) =>
@@ -20,22 +22,18 @@ class ProjectData {
           runtimeType == other.runtimeType &&
           code == other.code &&
           title == other.description &&
+          pagesData == other.pagesData &&
           code == other.code;
 
   @override
-  int get hashCode => Object.hash(title, description, code);
+  int get hashCode => Object.hash(title, description, code, pagesData);
 
   factory ProjectData.fromJson(Map<String, dynamic> json) => ProjectData(
-        title: json['title'],
-        description: json['description'] ?? '',
-        code: json['code'] ?? '',
-        pages: (json['pages'] as List).map((i) => PageData.fromJson(i)).toList(),
-      );
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      code: json['code'] ?? '',
+      pagesData: (json['files'] as List).map((e) => PageData.fromJson(e)).toList());
 
-  Map<String, dynamic> toJson() => {
-        'title': title,
-        'description': description,
-        'code': code,
-        'imageFiles': pages.map((e) => e.toJson()),
-      };
+  Map<String, dynamic> toJson() =>
+      {'title': title, 'description': description, 'code': code, 'files': jsonEncode(pagesData)};
 }

@@ -26,9 +26,9 @@ class BubbleModel extends HiveObject {
 
   BubbleModel(
       {this.code = '',
-      required this.dx,
-      required this.dy,
       required this.ofPage,
+      this.dx = 0,
+      this.dy = 0,
       this.originalText = '',
       this.translationTexts = const {}}) {
     if (code.isEmpty) {

@@ -9,6 +9,7 @@ import 'package:simple_manga_translation/presentation/screens/main_screen/main_s
 import 'package:simple_manga_translation/presentation/screens/main_screen/widgets/custom_card.dart';
 import 'package:simple_manga_translation/presentation/screens/main_screen/widgets/custom_form_field.dart';
 import 'package:simple_manga_translation/presentation/utils/custom_colors.dart';
+import 'package:simple_manga_translation/presentation/widgets/custom_progress_indicator.dart';
 import 'package:simple_manga_translation/presentation/widgets/multiplier.dart';
 
 class MainScreen extends StatefulWidget {
@@ -416,58 +417,66 @@ class _MainScreenState extends State<MainScreen> with BaseView {
     final List<ProjectModel> projects =
         _presenter.model.projectModels.values.toList().reversed.toList();
     projects.sort((a, b) => b.creationDate.compareTo(a.creationDate));
-    return Theme(
-      data: ThemeData(
-          scrollbarTheme:
-              ScrollbarThemeData(thumbColor: MaterialStateProperty.all(AppColors.iconColor))),
-      child: Scrollbar(
-        controller: scrollController,
-        child: CustomScrollView(
-          controller: scrollController,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    if (index == 0) {
-                      return buildButton(
-                          assetSvgPath: 'assets/icons/plus-rectangle.svg',
-                          center: true,
-                          iconSize: MediaQuery.of(context).size.width * 1 / 9,
-                          onPressed: () {
-                            onPressed();
-                          });
-                    }
-                    return MultiplierOnHover(
-                      multiplier: 1.03,
-                      child: GestureDetector(
-                        onDoubleTap: () {
-                          _presenter.openProjectWorkspace(projects[index - 1].code);
-                        },
-                        child: CustomCard(
-                          iconOnClick: () {
-                            _presenter.onProjectDelete(projects[index - 1].code);
-                          },
-                          extraIconAsset: 'assets/icons/book-remove.svg',
-                          projectName: projects[index - 1].title,
-                          creationDate: DateFormat('yyyy-MM-dd – kk:mm')
-                              .format(projects[index - 1].creationDate)
-                              .toString(),
-                          progress: 10,
-                        ),
-                      ),
-                    );
-                  }, childCount: projects.length + 1),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 250,
-                    mainAxisSpacing: 50,
-                    crossAxisSpacing: 50,
-                  )),
+    return _presenter.model.isLoading
+        ? const Center(
+            child: CustomProgressIndicator(
+              color: AppColors.iconColor,
+              height: 200,
+              width: 200,
             ),
-          ],
-        ),
-      ),
-    );
+          )
+        : Theme(
+            data: ThemeData(
+                scrollbarTheme:
+                    ScrollbarThemeData(thumbColor: MaterialStateProperty.all(AppColors.iconColor))),
+            child: Scrollbar(
+              controller: scrollController,
+              child: CustomScrollView(
+                controller: scrollController,
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverGrid(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          if (index == 0) {
+                            return buildButton(
+                                assetSvgPath: 'assets/icons/plus-rectangle.svg',
+                                center: true,
+                                iconSize: MediaQuery.of(context).size.width * 1 / 9,
+                                onPressed: () {
+                                  onPressed();
+                                });
+                          }
+                          return MultiplierOnHover(
+                            multiplier: 1.03,
+                            child: GestureDetector(
+                              onDoubleTap: () {
+                                _presenter.openProjectWorkspace(projects[index - 1].code);
+                              },
+                              child: CustomCard(
+                                iconOnClick: () {
+                                  _presenter.onProjectDelete(projects[index - 1].code);
+                                },
+                                extraIconAsset: 'assets/icons/book-remove.svg',
+                                projectName: projects[index - 1].title,
+                                creationDate: DateFormat('yyyy-MM-dd – kk:mm')
+                                    .format(projects[index - 1].creationDate)
+                                    .toString(),
+                                progress: 10,
+                              ),
+                            ),
+                          );
+                        }, childCount: projects.length + 1),
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 250,
+                          mainAxisSpacing: 50,
+                          crossAxisSpacing: 50,
+                        )),
+                  ),
+                ],
+              ),
+            ),
+          );
   }
 }
 

@@ -1,8 +1,14 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-const indexNotFound = -1;
+bool isValidCode(String code) {
+  return code.replaceAll('-', '').length == 8;
+}
+
+const INDEX_NOT_FOUND = -1;
 
 class CodeFormatter extends TextInputFormatter {
   final String _placeholder = '  -  -  -  ';
@@ -10,6 +16,8 @@ class CodeFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    /// provides placeholder text when user start editing
+
     int indexOfLetterO = _indexOfDifference(newValue.text, oldValue.text);
     if (indexOfLetterO < newValue.text.length &&
         !RegExp('[a-n-p-zA-N-P-Z- ]').hasMatch(newValue.text[indexOfLetterO].toUpperCase())) {
@@ -46,6 +54,7 @@ class CodeFormatter extends TextInputFormatter {
       return newValue;
     }
 
+    /// nothing changes, nothing to do
     if (newValue == _lastNewValue) {
       return oldValue;
     }
@@ -53,6 +62,7 @@ class CodeFormatter extends TextInputFormatter {
 
     int offset = newValue.selection.baseOffset;
 
+    /// restrict user's input within the length of date form
     if (offset > 11) {
       return oldValue;
     }
@@ -65,8 +75,12 @@ class CodeFormatter extends TextInputFormatter {
     final String newText = newValue.text;
     String? resultText;
 
+    /// handle user editing, there're two cases:
+    /// 1. user add new digit: replace '-' at cursor's position by user's input.
+    /// 2. user delete digit: replace digit at cursor's position by '-'
     int index = _indexOfDifference(newText, oldText);
     if (oldText.length < newText.length) {
+      /// add new digit
       String newChar = newText[index];
       if (index == 2 || index == 5 || index == 8) {
         index++;
@@ -77,6 +91,7 @@ class CodeFormatter extends TextInputFormatter {
         offset++;
       }
     } else if (oldText.length > newText.length) {
+      /// delete digit
       if (oldText[index] != '-') {
         resultText = oldText.replaceRange(index, index + 1, ' ');
         if (offset == 3 || offset == 6 || offset == 9) {
@@ -87,6 +102,7 @@ class CodeFormatter extends TextInputFormatter {
       }
     }
 
+    /// verify the number and position of splash character
     final splashes = resultText!.replaceAll(RegExp(r'[^-]'), '');
 
     int count = splashes.length;
@@ -101,13 +117,15 @@ class CodeFormatter extends TextInputFormatter {
     return oldValue.copyWith(
       text: resultText,
       selection: TextSelection.collapsed(offset: offset),
-      composing: TextRange.empty,
+      composing: defaultTargetPlatform == TargetPlatform.iOS
+          ? const TextRange(start: 0, end: 0)
+          : TextRange.empty,
     );
   }
 
   int _indexOfDifference(String? cs1, String? cs2) {
     if (cs1 == cs2) {
-      return indexNotFound;
+      return INDEX_NOT_FOUND;
     }
     if (cs1 == null || cs2 == null) {
       return 0;
@@ -121,7 +139,7 @@ class CodeFormatter extends TextInputFormatter {
     if (i < cs2.length || i < cs1.length) {
       return i;
     }
-    return indexNotFound;
+    return INDEX_NOT_FOUND;
   }
 
   String _fillInputToPlaceholder(String? input) {

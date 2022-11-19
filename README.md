@@ -13,11 +13,8 @@ comfortable work with the translation process of our application.
 ![image](https://user-images.githubusercontent.com/61965947/189872442-4c134e71-dad8-4c25-8ff4-23f56611ee76.png)
 
 The architecture for application was chosen as an improved MVP
-(Model View Presenter) pattern. This pattern is difficult to understand but
-very reliable for extending an application. Its essence is to have three layers -
+(Model View Presenter) pattern. This pattern is very reliable for extending an application. Its essence is to have three layers -
 presentation, domain, and data. The presentation layer consists of our streamenhanced MVP. Each user screen contains a model, a view itself, and a presenter.
-For example, the authentication screen would consist of – authentication screen,
-authentication model and authentication presenter.
 The presenter layer is responsible for what happens under the soot, it works
 with the model and can change it in every possible way. The model is the data
 that the user should see on their screen. And the view uses this model to show the
